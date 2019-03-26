@@ -1,0 +1,65 @@
+<html>
+<head>
+<!-- The JavaScript library call to use jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
+<!-- The HTML content which the user interacts with -->
+<body>
+<h2><b><u>Restaurant Finder</u></b></h2>
+<h4>Please select a city name:</h4>
+<select id="city" name="locality">
+</select>
+<button id="button1" value="Submit" name="Submit">Submit</button>
+<pre id="demo"></pre>
+<script>
+// Initiate the dropdown and add a title
+let dropdown = $('#city');
+dropdown.append('<option selected="true">Choose A City</option>');
+dropdown.prop('selectedIndex', 0);
+// Populate dropdown with list of cities
+$.ajax({
+	url: "http://opentable.herokuapp.com/api/cities",
+	dataType: 'json',
+	success: function(datas) {
+		var myJSON1 = JSON.stringify(datas);
+		objects = JSON.parse(myJSON1);
+		objects.cities.forEach(function(items) {
+			dropdown.append($('<option>'+items+'</option>'));
+    });
+	},
+	error: function() {
+		alert('A connection error occurred');
+	}
+});		
+
+// Initiates the button event listener event
+var count=0;
+$("#button1").click(function(e) {
+// Checks to see if the button was pressed more than once or not
+if (count>=1) {
+	$("#demo").empty();
+}
+// Generate restaurant information based on the city selected in the above code
+var selectedcity = $('#city :selected').text();
+$.ajax({
+	url: "http://opentable.herokuapp.com/api/restaurants?city="+selectedcity,
+	dataType: 'json',
+	success: function(data) {
+		var myJSON = JSON.stringify(data);
+		obj = JSON.parse(myJSON);
+		obj.restaurants.forEach(function(item) {
+			var element = item.name;
+			var element2 = item.address;
+			var element3 = item.price;
+			document.getElementById("demo").innerHTML += "Name: " + element + "<br />Address: " + element2 + "<br />Price: " + element3 +"<br /><br />";
+		});
+		},
+	error: function() {
+		alert('A connection error occurred');
+	}
+	});
+	count+=1;
+});
+</script>
+</body>
+</html>
